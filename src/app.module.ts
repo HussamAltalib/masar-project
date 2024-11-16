@@ -5,7 +5,6 @@ import { ArticleModule } from './article/article.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 
-const entitiesPath = __dirname + '/**/*.entity{.ts,.js}';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -16,7 +15,9 @@ const entitiesPath = __dirname + '/**/*.entity{.ts,.js}';
     password: '',
     database: 'masar-project',
     autoLoadEntities: true,
-    entities: [entitiesPath],
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    migrations: [__dirname + './src/migrations/'], 
+    migrationsRun: true, // Run migrations automatically on startup (not recommended for production)
     synchronize: false,
     logging: false,
   }), ArticleModule],
@@ -24,4 +25,3 @@ const entitiesPath = __dirname + '/**/*.entity{.ts,.js}';
   providers: [AppService],
 })
 export class AppModule {}
-// /Users/7ossam/Documents/Masar/masar-project/src/article/entities/article.entity.ts
