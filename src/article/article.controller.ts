@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -25,8 +25,15 @@ export class ArticleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto): Promise<Article> {
-    return this.articleService.update(+id, updateArticleDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateArticleDto: UpdateArticleDto,
+  ): Promise<Article> {
+    const updatedArticle = await this.articleService.update(+id, updateArticleDto);
+    if (!updatedArticle) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+    return updatedArticle;
   }
 
   @Delete(':id')

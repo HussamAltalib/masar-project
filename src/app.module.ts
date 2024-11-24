@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ArticleModule } from './article/article.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 
 
 
@@ -20,7 +22,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     migrationsRun: true, // Run migrations automatically on startup (not recommended for production)
     synchronize: false,
     logging: false,
-  }), ArticleModule],
+  }), ArticleModule, UserModule, AuthenticationModule],
   controllers: [AppController],
   providers: [AppService],
 })

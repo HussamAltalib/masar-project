@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
@@ -22,18 +22,25 @@ export class ArticleService {
 
 
 
-  findAll() {
-    return `This action returns all article`;
+  findAll(): Promise<Article[]> {
+    return this.articleRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(id: number): Promise<Article> {
+    return await this.articleRepository.findOneBy({ id });
   }
+  
 
 
   async update(id: number, updateArticleDto: UpdateArticleDto): Promise<Article> {
-  await this.articleRepository.update(id, updateArticleDto);
-  return await this.articleRepository.findOneBy({ id });
+    const article = await this.articleRepository.findOneBy({ id });
+
+    if (!article) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+
+    await this.articleRepository.update(id, updateArticleDto);
+    return await this.articleRepository.findOneBy({ id });
   }
 
   
