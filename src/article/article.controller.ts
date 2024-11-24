@@ -22,10 +22,6 @@ export class ArticleController {
     return this.articleService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.articleService.findOne(+id);
-  }
 
   @Patch(':id')
   async update(
@@ -37,6 +33,18 @@ export class ArticleController {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
     return updatedArticle;
+  }
+
+  // Endpoint to generate articles
+  @Get('generate')
+  async generateArticles() {
+    await this.articleService.generateArticles();
+    return { message: '1000 articles generated successfully!' };
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.articleService.findOne(+id);
   }
 
   @Delete(':id')

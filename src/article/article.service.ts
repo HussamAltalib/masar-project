@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { faker } from '@faker-js/faker'; // Import Faker
+
 
 
 @Injectable()
@@ -27,8 +29,12 @@ export class ArticleService {
   }
 
   async findOne(id: number): Promise<Article> {
-    return await this.articleRepository.findOneBy({ id });
+    if (isNaN(id) || id <= 0) {
+      throw new BadRequestException('Invalid ID provided');
+    }
+    return await this.articleRepository.findOne({ where: { id } });
   }
+  
   
 
 
@@ -42,6 +48,29 @@ export class ArticleService {
     await this.articleRepository.update(id, updateArticleDto);
     return await this.articleRepository.findOneBy({ id });
   }
+
+  async generateArticles(): Promise<void> {
+    const articles = [];
+  
+    for (let i = 0; i < 1000; i++) {
+      const title = faker.lorem.sentence(); // Generate a random title
+      const body = faker.lorem.paragraphs(3); // Generate random paragraphs
+  
+      // Use create method to initialize the entity
+      const article = this.articleRepository.create({
+        title,
+        body,
+      });
+  
+      articles.push(article);
+    }
+  
+    // Save all articles in one go
+    await this.articleRepository.save(articles);
+    console.log('1000 articles generated and saved successfully');
+    
+  }
+  
 
   
 
