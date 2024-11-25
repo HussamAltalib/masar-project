@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserResponseDto} from './dto/user-response.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,9 +28,27 @@ async findOneByUsername(username: string): Promise<User | undefined> {
 }
 
 
-//   findAll() {
-//     return `This action returns all user`;
-//   }
+async findAll(page: number, pageSize: number, search?: string): Promise<{ data: UserResponseDto[]; total: number }> {
+  const skip = (page - 1) * pageSize;
+
+  const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+  if (search) {
+    queryBuilder.where('user.username LIKE :search', { search: `%${search}%` });
+  }
+
+  queryBuilder.skip(skip).take(pageSize);
+
+  const [users, total] = await queryBuilder.getManyAndCount();
+
+  // Map the users to UserResponseDto
+  const data = users.map(user => ({
+    id: user.id,
+    username: user.username,
+  }));
+
+  return { data, total };
+}
 
 //   findOne(id: number) {
 //     return `This action returns a #${id} user`;

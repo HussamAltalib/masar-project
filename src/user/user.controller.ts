@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -22,10 +22,16 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
+  @Get()
+  findAll(
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
+    @Query('search') search?: string,
+  ) {
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSizeNumber = parseInt(pageSize, 10) || 10;
+    return this.userService.findAll(pageNumber, pageSizeNumber, search);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
