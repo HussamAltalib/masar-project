@@ -24,9 +24,24 @@ export class ArticleService {
 
 
 
-  findAll(): Promise<Article[]> {
-    return this.articleRepository.find();
+  async findAll(page: number, pageSize: number, search?: string): Promise<{ data: Article[]; total: number }> {
+    // Calculate pagination details
+    const skip = (page - 1) * pageSize;
+
+    // Build the query with pagination and optional search
+    const queryBuilder = this.articleRepository.createQueryBuilder('article');
+
+    if (search) {
+      queryBuilder.where('article.title LIKE :search OR article.body LIKE :search', { search: `%${search}%` });
+    }
+
+    queryBuilder.skip(skip).take(pageSize);
+
+    const [data, total] = await queryBuilder.getManyAndCount();
+
+    return { data, total };
   }
+
 
   async findOne(id: number): Promise<Article> {
     if (isNaN(id) || id <= 0) {

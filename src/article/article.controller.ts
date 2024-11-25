@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, Query} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -18,8 +18,14 @@ export class ArticleController {
   }
 
   @Get()
-  findAll() {
-    return this.articleService.findAll();
+  findAll(
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
+    @Query('search') search?: string,
+  ) {
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSizeNumber = parseInt(pageSize, 10) || 10;
+    return this.articleService.findAll(pageNumber, pageSizeNumber, search);
   }
 
 
