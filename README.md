@@ -71,6 +71,24 @@ $ mau deploy
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
+## Database Schema
+
+The following diagram represents the database schema for the current system, which includes tables for `users`, `articles`, and `followers`.
+
+### Database Diagram
+![Database Diagram](./docs/masar-project-db.png) 
+
+### Description
+- **Users Table**: Contains information about registered users, including `id`, `username`, and `password`.
+- **Articles Table**: Stores articles created by users, with fields like `id`, `title`, `body`, and `user_id` that links each article to its author.
+- **Followers Table**: Represents the "followers" relationship between users, using `follower_id` (the user who is following) and `followed_id` (the user being followed).
+
+This database schema enables:
+- Users to create and manage articles.
+- Users to follow/unfollow other users.
+- Efficient querying of articles authored by users, as well as querying followers and followings of each user.
+
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
