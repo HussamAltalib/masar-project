@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { ConfigModule } from '@nestjs/config';
+import { FollowersModule } from './followers/followers.module';
 
 
 
@@ -27,7 +28,7 @@ import { ConfigModule } from '@nestjs/config';
     migrationsRun: true, // Run migrations automatically on startup (not recommended for production)
     synchronize: false,
     logging: false,
-  }), ArticleModule, UserModule, AuthenticationModule],
+  }), ArticleModule, UserModule, AuthenticationModule, FollowersModule],
   controllers: [AppController],
   providers: [AppService],
 })
