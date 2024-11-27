@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, Query, Request} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, Query, Request, ConsoleLogger} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -32,16 +32,17 @@ export class ArticleController {
 
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(
-    @Param('id') id: string,
-    @Body() updateArticleDto: UpdateArticleDto,
+  @Param('id') id: string,
+  @Body() updateArticleDto: UpdateArticleDto,
+  @Request() req
   ): Promise<Article> {
-    const updatedArticle = await this.articleService.update(+id, updateArticleDto);
-    if (!updatedArticle) {
-      throw new NotFoundException(`Article with ID ${id} not found`);
-    }
-    return updatedArticle;
+    console.log("Controller - userId from JWT: ", req.user.userId);
+    return await this.articleService.update(+id, updateArticleDto, req.user.userId);
   }
+
+
 
   // Endpoint to generate articles
   @Get('generate')
@@ -55,8 +56,11 @@ export class ArticleController {
     return this.articleService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.articleService.remove(+id);
-  }
+  remove(@Param('id') id: string, @Request() req) {
+    console.log("Controller - userId from JWT: ", req.user.userId);
+    return this.articleService.remove(+id, req.user.userId);
+}
+
 }
