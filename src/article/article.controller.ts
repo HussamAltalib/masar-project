@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, Query, Request} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
@@ -13,9 +13,11 @@ export class ArticleController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto): Promise<Article> {
-    return this.articleService.create(createArticleDto);
+  create(@Body() createArticleDto: CreateArticleDto, @Request() req) {
+    console.log("User Info:", req.user); // Should log userId and username correctly
+    return this.articleService.create(createArticleDto, req.user.userId);
   }
+  
 
   @Get()
   findAll(

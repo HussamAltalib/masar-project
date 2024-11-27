@@ -5,6 +5,7 @@ import { Article } from './entities/article.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { faker } from '@faker-js/faker'; // Import Faker
+import { User } from 'src/user/entities/user.entity';
 
 
 
@@ -17,10 +18,14 @@ export class ArticleService {
     private articleRepository: Repository<Article>,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto): Promise<Article> {
-    const newArticle = this.articleRepository.create(createArticleDto);
+  async create(createArticleDto: CreateArticleDto, userId: number): Promise<Article> {
+    const newArticle = this.articleRepository.create({
+      ...createArticleDto,
+      userId, // Set userId instead of user relationship
+    });
     return await this.articleRepository.save(newArticle);
   }
+  
 
 
 
