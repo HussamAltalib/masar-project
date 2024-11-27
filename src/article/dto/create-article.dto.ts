@@ -7,5 +7,5 @@ export class CreateArticleDto {
 
   @IsString()
   @IsNotEmpty()
-  body: string;
+  body: string; 
 }
