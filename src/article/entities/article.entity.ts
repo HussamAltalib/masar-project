@@ -1,19 +1,16 @@
-
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
-
 
 @Entity('articles')
 export class Article {
-    
-
     @PrimaryGeneratedColumn()
-    id:number
+    id: number;
 
     @Column()
-    title: string 
+    title: string;
 
     @Column()
-    body: string
+    body: string;
 
+    @Column()
+    userId: number; // Foreign key reference to User entity
 }

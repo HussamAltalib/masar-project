@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { faker } from '@faker-js/faker'; // Import Faker
+import { User } from 'src/user/entities/user.entity';
 
 
 
@@ -17,10 +18,14 @@ export class ArticleService {
     private articleRepository: Repository<Article>,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto): Promise<Article> {
-    const newArticle = this.articleRepository.create(createArticleDto);
+  async create(createArticleDto: CreateArticleDto, userId: number): Promise<Article> {
+    const newArticle = this.articleRepository.create({
+      ...createArticleDto,
+      userId, // Set userId instead of user relationship
+    });
     return await this.articleRepository.save(newArticle);
   }
+  
 
 
 
@@ -53,16 +58,25 @@ export class ArticleService {
   
 
 
-  async update(id: number, updateArticleDto: UpdateArticleDto): Promise<Article> {
-    const article = await this.articleRepository.findOneBy({ id });
-
+  async update(id: number, updateArticleDto: UpdateArticleDto, userId: number): Promise<Article> {
+    const article = await this.articleRepository.findOne({ where: { id } });
+    console.log("Service - Found article: ", article);
+    
     if (!article) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
-
-    await this.articleRepository.update(id, updateArticleDto);
-    return await this.articleRepository.findOneBy({ id });
+  
+    // Check if the logged-in user is the owner of the article
+    if (article.userId !== userId) {
+      console.log("Service - Article userId: ", article.userId, " Logged-in userId: ", userId);
+      throw new ForbiddenException('You are not authorized to update this article');
+    }
+  
+    // Proceed with update
+    Object.assign(article, updateArticleDto);
+    return await this.articleRepository.save(article);
   }
+  
 
   async generateArticles(): Promise<void> {
     const articles = [];
@@ -89,7 +103,19 @@ export class ArticleService {
 
   
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(id: number, userId: number): Promise<void> {
+    const article = await this.articleRepository.findOne({ where: { id } });
+  
+    if (!article) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
+  
+    // Check if the logged-in user is the author of the article
+    if (article.userId !== userId) {
+      throw new ForbiddenException(`You are not authorized to delete this article`);
+    }
+  
+    await this.articleRepository.remove(article);
   }
+  
 }
