@@ -4,11 +4,11 @@ dotenv.config();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: '',
-  database: 'masar-project',
+  host: process.env.DATABASE_HOST,
+  port: parseInt(process.env.DATABASE_PORT, 10),
+  username: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
   // entities: [Episode],
   //   autoLoadEntities: true,
   synchronize: true, // todo: not safe for production and we should use migrations instead
