@@ -43,7 +43,6 @@ export class ArticleController {
   }
 
 
-
   // Endpoint to generate articles
   @Get('generate')
   async generateArticles() {
@@ -52,7 +51,11 @@ export class ArticleController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
+    const article = await this.articleService.findOne(+id);
+    if (!article) {
+      throw new NotFoundException(`Article with ID ${id} not found`);
+    }
     return this.articleService.findOne(+id);
   }
 
