@@ -11,9 +11,6 @@ import { AccessToken } from './types/access-token.interface';
 
 
 
-
-
-
 @Injectable()
 export class AuthenticationService {
 
@@ -35,10 +32,14 @@ export class AuthenticationService {
     return user;
   }
 
-  async login(user: User): Promise<AccessToken> {
-    const payload = { username: user.username, id: user.id };
-    return { access_token: this.jwtService.sign(payload) };
+  async login(user: any) {
+    // Using `sub` to store user ID
+    const payload = { username: user.username, sub: user.id }; 
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
+  
   
 
   async register(user: RegisterRequestDto): Promise<AccessToken> {
