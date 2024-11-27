@@ -8,7 +8,7 @@ export const dataSourceOptions: DataSourceOptions = {
   port: 5432,
   username: 'postgres',
   password: '',
-  database: 'masar-project',
+  database: 'masar-project01',
   // entities: [Episode],
   //   autoLoadEntities: true,
   synchronize: true, // todo: not safe for production and we should use migrations instead
